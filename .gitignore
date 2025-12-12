@@ -1,0 +1,32 @@
+# Node.js dependencies
+node_modules/
+
+# .env file (environment variables)
+.env
+
+# Package lock and package files (optional, but often good to ignore package-lock.json)
+package-lock.json
+
+# Application source code
+src/
+
+# Log files (if you're logging during development)
+*.log
+
+# OS-specific files (MacOS, Windows, etc.)
+.DS_Store   # macOS
+Thumbs.db   # Windows
+
+# IDE-specific files (e.g., VSCode, WebStorm)
+.vscode/
+.idea/
+
+# Build and distribution directories
+/dist/
+/build/
+
+# Test coverage directories and reports (if applicable)
+coverage/
+
+# Other temporary files
+*.swp      # Vim swap files
