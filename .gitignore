@@ -8,7 +8,6 @@ node_modules/
 package-lock.json
 
 # Application source code
-src/
 
 # Log files (if you're logging during development)
 *.log
