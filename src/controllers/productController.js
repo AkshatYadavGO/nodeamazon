@@ -135,3 +135,77 @@ export const getProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// @desc    Get single product by ID or slug
+// @route   GET /api/products/:identifier
+// @access  Public
+
+export const getProduct = async (req, res) => {
+  try {
+    const { identifier } = req.params;
+    const product = await Product.findById(identifier)
+      .populate("category", "name slug")
+      .populate("createdBy", "name email");
+
+    if (!product) {
+      const product = await Product.findOne({ slug: identifier })
+        .populate("category", "name slug")
+        .populate("createdBy", "name email");
+    }
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    if (
+      product.status === "active" &&
+      (!req.user || req.user.role !== "admin")
+    ) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.status(200).json({
+      success: true,
+      data: product,
+    });
+  } catch (error) {}
+};
+
+// @desc    Update product
+// @route   PUT /api/products/:id
+// @access  Private/Admin
+
+export const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    if (
+      req.body.category &&
+      req.body.category !== product.category.toString()
+    ) {
+      const categoryExists = Product.findById(req.body.category);
+      if (!categoryExists) {
+        res.status(404).json({ message: "category not found" });
+      }
+    }
+    if (req.body.sku && req.body.sku !== Product.sku) {
+      const skuExists = await Product.findOne({ sku: req.body.sku });
+      if (skuExists) {
+        res.status(400).json({ message: "sku already exists" });
+      }
+    }
+    //update the product
+    product = await Product.findByIdAndUpdate(id,req.body,{new:true, runValidators:true}).populate("category", "name slug");
+    res.status(200).json({
+      success: true,
+      data: product
+    });
+
+  } catch (error) {
+    res.status(500).json({message: error.message})
+  }
+};
+// @desc    Delete product
+// @route   DELETE /api/products/:id
+// @access  Private/Admin
+
